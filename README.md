@@ -2,7 +2,6 @@
 
 A customizable Flutter widget that displays text with elegant expandable/collapsible functionality and action buttons seamlessly integrated in the bottom-right corner.
 
-
 > [!CAUTION]
 > Can only work with `useMaterial3 = false`, see [TextPainter behavior no longer matches Text behavior, when useMaterial3 is true](https://github.com/flutter/flutter/issues/141172).
 
@@ -12,7 +11,8 @@ Add this to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  expandable_text: ^1.0.0
+  expandable_text:
+    git: https://github.com/ikvarxt/expandable_text.git
 ```
 
 ## Usage
