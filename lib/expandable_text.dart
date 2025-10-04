@@ -13,6 +13,7 @@ class ExpandableText extends StatefulWidget {
   final ActionCallback? onActionPress;
 
   final TextDirection? textDirection;
+  final bool performActionOnWholeText;
 
   final double actionIconSize = 12;
   final double actionStartPadding = 10;
@@ -27,6 +28,7 @@ class ExpandableText extends StatefulWidget {
     this.onActionPress,
     this.maxLines = 2,
     this.textDirection,
+    this.performActionOnWholeText = false,
   });
 
   @override
@@ -73,6 +75,11 @@ class _ExpandableTextState extends State<ExpandableText>
   }
 
   void _toggle() {
+    final action = _expanded
+        ? ExpandableTextAction.collapse
+        : ExpandableTextAction.expand;
+    widget.onActionPress?.call(action);
+
     setState(() {
       _expanded = !_expanded;
     });
@@ -132,7 +139,10 @@ class _ExpandableTextState extends State<ExpandableText>
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeInOut,
           alignment: Alignment.topCenter,
-          child: body,
+          child: _gestureDetectorWrapper(
+            shouldWrap: widget.performActionOnWholeText,
+            child: body,
+          ),
         );
       },
     );
@@ -142,11 +152,8 @@ class _ExpandableTextState extends State<ExpandableText>
     final isExpand = action == ExpandableTextAction.expand;
     return Padding(
       padding: EdgeInsets.only(left: widget.actionStartPadding),
-      child: GestureDetector(
-        onTap: () {
-          _toggle();
-          widget.onActionPress?.call(action);
-        },
+      child: _gestureDetectorWrapper(
+        shouldWrap: !widget.performActionOnWholeText,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           spacing: widget.actionIconSpacing,
@@ -275,5 +282,13 @@ class _ExpandableTextState extends State<ExpandableText>
 
     _expandedInlineFits = testLines == baseLines;
     _expandedInlineSpanCache = baseTextSpan;
+  }
+
+  Widget _gestureDetectorWrapper({
+    required bool shouldWrap,
+    required Widget child,
+  }) {
+    if (!shouldWrap) return child;
+    return GestureDetector(onTap: _toggle, child: child);
   }
 }
